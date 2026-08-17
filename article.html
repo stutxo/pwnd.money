@@ -37,7 +37,6 @@
 </head>
 <body>
 <main>
-<!-- X-COPY-START: select from the H1 to here, paste into the X Articles composer, upload cover.png separately -->
   <header>
     <p class="meta"><a href="./">pwnd.money</a> · Bitcoin key exposure audit</p>
     <h1>The dark forest: Bitcoin signatures</h1>
@@ -103,7 +102,7 @@
   </section>
 
   <section>
-    <h2>Keys you can count to</h2>
+    <h2>Someone took "timechain" too literally</h2>
     <p>26 funded addresses have private keys equal to Unix timestamps from 2009 to 2029.
       <a href="https://mempool.space/address/14xTHSRP6vbJv3xcXih2EnHYYCopR5ghJJ" target="_blank" rel="noopener">One</a>
       is a date in February 2009, weeks after Bitcoin launched.
@@ -129,8 +128,9 @@
   <section>
     <h2>Stranger corners</h2>
     <ul>
-      <li>71,863 SIGHASH_SINGLE signatures signed the constant <code>z = 1</code> and can be
-        replayed against another UTXO of the same key.
+      <li>71,863 signatures carry a flag bug: signed with SIGHASH_SINGLE against a missing output,
+        they commit to the constant <code>z = 1</code> instead of to any transaction, so anyone can
+        copy one onto a different payment from the same key, no private key needed.
         <a href="https://mempool.space/address/15iwPhxErFDyQTJew81ok9hCbQNhyWuXq1" target="_blank" rel="noopener">One
         address</a> has 7 of them.</li>
       <li>287 signatures from at least 46 keys used <code>k = 1</code>
@@ -180,6 +180,23 @@
       fees until the miner takes most of it. Deposit to gone: typically minutes. That is why every
       affected address reads zero, and why sending "just a little, to test" to one donates it to
       the fastest bot.</p>
+    <p>The hunters fight each other, too, in replace-by-fee (RBF) bidding wars. In September 2024
+      the solver of the 2015 puzzle's 6.6 BTC prize broadcast their claim to the mempool; a bot
+      <a href="https://mempool.space/tx/57a88f47e4c047740b782a5562fca143ce85de0373cbff3a7d406e9ae7fc2f5f" target="_blank" rel="noopener">replaced
+      the unconfirmed transaction with its own higher-fee copy</a> and took the prize. The next
+      prize solver <a href="https://mempool.space/tx/0be77ec8bec331da8750c8b715085c6cf6c374ca31f829a515c62b9846e32986" target="_blank" rel="noopener">skipped
+      the public mempool entirely</a>.</p>
+    <p>Days before this article was published, it happened again, to a seed phrase made of the word
+      "bus" repeated twelve times (it really does derive
+      <a href="https://mempool.space/address/bc1qqhx2nydhdw5qhruslhwf74hdjq88lh662m8xy2" target="_blank" rel="noopener"><code>bc1qqhx2nydhdw5qhruslhwf74hdjq88lh662m8xy2</code></a>).
+      Four deposits totaling 1.771 BTC landed in one block; bots spent the interval outbidding each
+      other, and every sweep confirmed in that block paid
+      <a href="https://mempool.space/tx/1d2e80606dbb09a49e0c06779d5bc33ac68523d89eee474b2812c8a0d35dc090" target="_blank" rel="noopener">100%
+      of the money as miner fees</a>, down to the last satoshi. Even a 546-sat dusting two days
+      later was swept. "Why do people do this?", as
+      <a href="https://x.com/ottosch_/status/2087534668945989928" target="_blank" rel="noopener">@ottosch_</a>
+      put it (<a href="https://x.com/narcelio/status/2087597065354322333" target="_blank" rel="noopener">also
+      @narcelio</a>).</p>
     <p>The BIP-173 example address, whose key is the integer 1, was still receiving dust the week
       of the snapshot; watcher bots sweep every deposit within minutes. There is no size floor
       either: the smallest listed post-exposure spend in the audit is a single satoshi.</p>
@@ -217,8 +234,14 @@
     <p>If your address appears in the table, treat the key as public knowledge: never send funds to
       it again. The forest does not forget a light.</p>
   </section>
+  <section>
+    <h2>Afterword</h2>
+    <p>OpenSats, the nonprofit that funds Bitcoin open-source work, has opened a priority grants
+      track for the first responders and red teamers working the Coldcard incident:
+      <a href="https://opensats.org/blog/code-red-supporting-first-responders" target="_blank" rel="noopener">Code
+      RED: priority support for red teaming</a>.</p>
+  </section>
 </main>
-<!-- X-COPY-END -->
 
 <footer>
   <p><small>Snapshot amounts can change. No private keys are included.
