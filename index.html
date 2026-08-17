@@ -92,12 +92,14 @@
     <p class="status"><strong>No affected address held funds at the snapshot.</strong></p>
     <p class="meta chips-label">Weirdest finds:</p>
     <ul class="chips">
+      <li><a href="#row-unbothered">the wallet that never noticed</a></li>
       <li><a href="#row-fixed-nonce">the nonce reused 2.55M times</a></li>
       <li><a href="#row-brainwallets">sha256("password")</a></li>
       <li><a href="#row-timestamp">a private key from 2009</a></li>
       <li><a href="#row-burned">the key printed in a Bitcoin BIP</a></li>
     </ul>
-    <p class="meta">Note: Coldcard-related findings are not included yet; they will be added in a future update.</p>
+    <p class="meta">Note: findings from the <a href="#incidents">July 2026 Coldcard entropy flaw</a> are
+      not included yet; they will be added in a future update.</p>
     <dl class="summary">
       <div><dt>Verified nonce-reuse findings</dt><dd>475</dd></div>
       <div><dt>Affected addresses</dt><dd>432</dd></div>
@@ -151,6 +153,7 @@
       <a href="#findings">Address table</a>
       <a href="#other-results">Other findings</a>
       <a href="#related-outputs">Related outputs</a>
+      <a href="#incidents">Known incidents</a>
       <a href="#faq">FAQ</a>
       <a href="#method">Method</a>
     </nav>
@@ -224,7 +227,8 @@
           <tr><th scope="row">Taproot / Schnorr</th><td>No same-key nonce reuse. Two <code>R</code> values repeated across different signing keys; neither exposed a key. No key-path <code>k = d</code> across 352 million outputs.</td></tr>
           <tr><th scope="row">Deep per-key attacks</th><td>In a 2,000,000-key sample of the 135.7 million keys with 2+ signatures, 24 more keys fell without any plain reuse: 13 had signed twice with one identical nonce, 7 had nonces differing by exactly 1, and 4 had nonces short enough (<code>|k| &lt; 2<sup>128</sup></code>) to fall to a lattice (HNP) attack.</td></tr>
           <tr id="row-burned"><th scope="row">Burned by design</th><td>The private key <code>d = 1</code> is, not coincidentally, the BIP-173 specification's <a href="https://mempool.space/address/bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4" target="_blank" rel="noopener">example bech32 address</a>. It was still receiving dust the week of the snapshot; watcher bots sweep every deposit within minutes.</td></tr>
-          <tr><th scope="row">Still happening</th><td>The newest spend from a proven-compromised key (<a href="https://mempool.space/address/15EmxXfWmD4UemererBjUVYjK4brjfGWPg" target="_blank" rel="noopener"><code>15EmxXfWmD4UemererBjUVYjK4brjfGWPg</code></a>) confirmed on 2026-06-19, six weeks before the snapshot. The oldest date to 2012.</td></tr>
+          <tr><th scope="row">Still happening</th><td>The newest spend from a proven-compromised key (<a href="https://mempool.space/address/15EmxXfWmD4UemererBjUVYjK4brjfGWPg" target="_blank" rel="noopener"><code>15EmxXfWmD4UemererBjUVYjK4brjfGWPg</code></a>) confirmed on 2026-06-19, seven weeks before the snapshot. The oldest date to 2012.</td></tr>
+          <tr id="row-unbothered"><th scope="row">The wallet that never noticed</th><td>The largest spent-after-exposure case looks like an owner who never knew. <a href="https://mempool.space/address/1BMzWp77j7x3GKDYNbCP3df7YG3UEw1vVE" target="_blank" rel="noopener"><code>1BMzWp77j7x3GKDYNbCP3df7YG3UEw1vVE</code></a> signed two inputs of <a href="https://mempool.space/tx/6c2d0bbb87350cd18d93ede269817767b84715a6292a022c68b327f704ce486f" target="_blank" rel="noopener">one 2013-02-12 transaction</a> with the same nonce, exposing its key to anyone, then simply kept operating: <a href="https://mempool.space/tx/f1021b6e62eccb35c88cb4e88ad34133d8121c065802d8eaf609664c621f6f03" target="_blank" rel="noopener">533.82 BTC spent four days later</a>, about 1,930.26 BTC over the following weeks, 6,622.25 BTC across its lifetime. No grab ever came; the activity before and after the leak is one continuous pattern. It was last seen spending 9,749 sats in December 2025.</td></tr>
         </tbody>
       </table>
     </div>
@@ -267,6 +271,53 @@
     </details>
   </section>
 
+  <section aria-labelledby="incidents">
+    <h2 id="incidents">Known incidents and write-ups</h2>
+    <p>Earlier public exposures of the same weakness classes this audit measures, with the canonical
+      write-up for each.</p>
+    <ul>
+      <li><strong>Aug 2013 · Android SecureRandom flaw:</strong> Android's broken random number generator
+        made wallet apps sign with colliding nonces, and thefts were reported within days of the
+        <a href="https://bitcoin.org/en/alert/2013-08-11-android" target="_blank" rel="noopener">bitcoin.org alert</a>.
+        The classic case of the nonce-reuse class measured in the table above.</li>
+      <li><strong>2015 · The bitcoin puzzle:</strong> someone funded 256 addresses with keys confined to
+        consecutive ranges to measure "the cracking strength of the community"
+        (<a href="https://bitcointalk.org/index.php?topic=1306983" target="_blank" rel="noopener">announcement</a>,
+        <a href="https://privatekeys.pw/puzzles/bitcoin-puzzle-tx" target="_blank" rel="noopener">current status</a>).
+        Its smallest keys appear in the small-scalar row above.</li>
+      <li><strong>Aug 2015 · Brainwallets:</strong> Ryan Castellucci's DEF CON 23 talk
+        <a href="https://rya.nc/files/cracking_cryptocurrency_brainwallets.pdf" target="_blank" rel="noopener"><em>Cracking
+        Cryptocurrency Brainwallets</em></a> showed how thoroughly password-derived keys were already
+        plundered; he famously recovered 250 BTC from one and tracked down the owner to return it.</li>
+      <li><strong>2019 · Ethercombing:</strong> Independent Security Evaluators enumerated guessable keys
+        and found 732 in use, plus evidence of an active thief they dubbed the "Blockchain Bandit"
+        (<a href="https://www.ise.io/casestudies/ethercombing/" target="_blank" rel="noopener">paper</a>,
+        <a href="https://www.wired.com/story/blockchain-bandit-ethereum-weak-private-keys/" target="_blank" rel="noopener">Wired story</a>).</li>
+      <li><strong>Jul 2023 · Milk Sad:</strong> Libbitcoin Explorer's <code>bx seed</code> produced key
+        material from a 32-bit-seeded Mersenne Twister
+        (<a href="https://milksad.info/" target="_blank" rel="noopener">milksad.info</a>, CVE-2023-39910).
+        The team's continuing research covers Trust Wallet and Cake Wallet PRNG flaws, and they publish a
+        dataset of over 350,000 weak-wallet addresses with an
+        <a href="https://milksad.info/lookup.html" target="_blank" rel="noopener">address lookup</a>.</li>
+      <li><strong>Nov 2023 · Randstorm:</strong> browser wallets built on BitcoinJS between roughly 2011
+        and 2015 were generated with insufficient entropy
+        (<a href="https://www.unciphered.com/disclosure-of-vulnerable-bitcoin-wallet-library-2/" target="_blank" rel="noopener">Unciphered's disclosure</a>).</li>
+      <li><strong>Aug 2024 · Dark Skippy:</strong> a demonstration that malicious signing-device firmware
+        can exfiltrate a seed inside the nonces of just two signatures
+        (<a href="https://darkskippy.com/" target="_blank" rel="noopener">disclosure</a>). Not seen in the
+        wild; the reason nonce hygiene matters even without reuse.</li>
+      <li><strong>Jul 2026 · Coldcard entropy flaw:</strong> a build-level bug silently routed seed
+        generation through a software fallback instead of the hardware TRNG on firmware shipped since
+        March 2021, leaving Mk2/Mk3 seeds with only about 2<sup>22</sup> candidate states, enumerable
+        in under an hour on one GPU (Mk4/Mk5/Q about 2<sup>52</sup>). Coordinated draining of affected
+        wallets began on July 30, 2026 and continued in later waves. Technical autopsy:
+        <a href="https://wizardsardine.com/blog/coldcard-vuln-deep-dive/" target="_blank" rel="noopener">Wizardsardine's
+        incident report</a>. The devices' signatures were always fine (RFC 6979); the seeds were not.
+        Keys that leak at generation time never produce the signature-level trace this audit measures,
+        so related findings will be added separately in a future update.</li>
+    </ul>
+  </section>
+
   <section aria-labelledby="faq">
     <h2 id="faq">FAQ</h2>
     <details>
@@ -296,8 +347,10 @@
     <details>
       <summary>Were the coins stolen?</summary>
       <p>Unknown, and unknowable from chain data. 2,354&nbsp;BTC moved out of affected addresses after
-        their keys became publicly computable. Some of that was certainly owners spending as usual,
-        and watcher bots do sweep known-broken keys within minutes of any deposit. What can be said:
+        their keys became publicly computable. Some of that was certainly owners spending as usual: the
+        largest single case, about 1,930&nbsp;BTC from one 2013 wallet, shows every sign of being the
+        owner continuing as normal (see <a href="#row-unbothered">the wallet that never noticed</a>).
+        Watcher bots do sweep known-broken keys within minutes of any deposit. What can be said:
         every affected address was empty at the snapshot.</p>
     </details>
     <details>
@@ -311,8 +364,12 @@
     </details>
     <details>
       <summary>Does this include the Coldcard data?</summary>
-      <p>Not yet. The Coldcard-related findings are being analyzed separately and will be added in a
-        future update.</p>
+      <p>Not yet. The July 2026 Coldcard entropy flaw exposed keys at generation time, before any
+        signature existed, so it needs a different analysis than this signature-level audit. That work is
+        in progress and will be added in a future update;
+        <a href="https://wizardsardine.com/blog/coldcard-vuln-deep-dive/" target="_blank" rel="noopener">this
+        incident report</a> reconstructs the flaw in detail. If you generated a seed on a Coldcard since
+        2021, move your funds to a freshly generated wallet.</p>
     </details>
     <details>
       <summary>My address is listed. What should I do?</summary>
