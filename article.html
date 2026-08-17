@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>3,207 Bitcoin private keys recovered from public data | pwnd.money</title>
+  <title>The dark forest: Bitcoin signatures | pwnd.money</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💸</text></svg>">
-  <meta name="description" content="A full-chain audit of 3.76 billion Bitcoin signatures recovered 3,207 private keys from public data alone. These are the interesting finds.">
+  <meta name="description" content="3,207 Bitcoin private keys recovered from on-chain data: the wallet that never noticed, the nonce reused 2.55 million times, and the bots that never stop watching.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://pwnd.money/article.html">
-  <meta property="og:title" content="3,207 Bitcoin private keys recovered from public data">
-  <meta property="og:description" content="A full-chain audit of 3.76 billion Bitcoin signatures: the wallet that never noticed, the nonce reused 2.55 million times, and sha256(&quot;password&quot;).">
+  <meta property="og:title" content="The dark forest: Bitcoin signatures">
+  <meta property="og:description" content="3,207 Bitcoin private keys recovered from on-chain data: the wallet that never noticed, the nonce reused 2.55 million times, and the bots that never stop watching.">
   <meta property="og:image" content="https://pwnd.money/cover.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="3,207 Bitcoin private keys recovered from public data">
-  <meta name="twitter:description" content="A full-chain audit of 3.76 billion Bitcoin signatures: the wallet that never noticed, the nonce reused 2.55 million times, and sha256(&quot;password&quot;).">
+  <meta name="twitter:title" content="The dark forest: Bitcoin signatures">
+  <meta name="twitter:description" content="3,207 Bitcoin private keys recovered from on-chain data: the wallet that never noticed, the nonce reused 2.55 million times, and the bots that never stop watching.">
   <meta name="twitter:image" content="https://pwnd.money/cover.png">
   <style>
     @font-face { font-family: 'Space Grotesk'; src: url('fonts/space-grotesk.woff2') format('woff2');
@@ -37,14 +37,18 @@
 </head>
 <body>
 <main>
+<!-- X-COPY-START: select from the H1 to here, paste into the X Articles composer, upload cover.png separately -->
   <header>
     <p class="meta"><a href="./">pwnd.money</a> · Bitcoin key exposure audit</p>
-    <h1>3,207 Bitcoin private keys recovered from public data</h1>
+    <h1>The dark forest: Bitcoin signatures</h1>
     <p class="lede">I scanned every signature ever confirmed on the Bitcoin blockchain, 3.76 billion
-      of them from 1.41 billion transactions, and recovered 3,207 private keys from public data
+      of them from 1.41 billion transactions, and recovered 3,207 private keys from on-chain data
       alone. Each key was verified against its on-chain public key. No private keys are stored
       anywhere, and every affected address was empty at the snapshot. These are the interesting
       finds.</p>
+    <p class="lede">In Liu Cixin's dark forest, any civilization that reveals its position invites a
+      strike from unseen hunters. An exposed Bitcoin key works the same way. Every key below was a
+      light in the trees, and something was always watching.</p>
     <p class="meta">2026-08-16 · Snapshot: block 961,768, 2026-08-09 20:00 UTC · All figures and the full
       address table: <a href="./">the audit report</a></p>
     <figure class="cover"><img src="cover.png" alt="Bar chart of affected addresses' last on-chain activity by year, peaking in 2017" width="1200" height="675"></figure>
@@ -56,7 +60,8 @@
       <li>475 nonce-reuse findings, each cryptographically proven, across 432 addresses.</li>
       <li>3,207 private keys in total once transitive and cross-key leaks are counted.</li>
       <li>2,354.29 BTC moved out of affected addresses after their keys became publicly computable.</li>
-      <li>0 BTC remained in any affected address at the snapshot. Watcher bots see to that.</li>
+      <li>0 BTC remained in any affected address at the snapshot. The watchers see to that: deposits
+        to known-weak keys are swept within minutes.</li>
     </ul>
   </section>
 
@@ -72,7 +77,7 @@
       the owner's own. It was last seen spending 9,749 sats in December 2025.</p>
     <p>This single address accounts for 82% of the audit's 2,354 BTC spent-after-exposure total, and
       it anchors what that figure really means: value that was in motion while the key was public,
-      not proof of theft.</p>
+      not proof of theft. The loudest light in the forest, and no shot ever came.</p>
   </section>
 
   <section>
@@ -168,8 +173,21 @@
   </section>
 
   <section>
+    <h2>The hunters are always watching</h2>
+    <p>Every address in this audit is a set of published coordinates, and the hunters never log
+      off. Automated watchers monitor weak-key addresses around the clock: the moment a deposit
+      confirms, a bot broadcasts a spend, and when several bots compete they outbid each other's
+      fees until the miner takes most of it. Deposit to gone: typically minutes. That is why every
+      affected address reads zero, and why sending "just a little, to test" to one donates it to
+      the fastest bot.</p>
+    <p>The BIP-173 example address, whose key is the integer 1, was still receiving dust the week
+      of the snapshot; watcher bots sweep every deposit within minutes. There is no size floor
+      either: the smallest listed post-exposure spend in the audit is a single satoshi.</p>
+  </section>
+
+  <section>
     <h2>Why this keeps happening</h2>
-    <p>Every few years, broken randomness or broken conventions expose another batch of keys:</p>
+    <p>Every few years, broken randomness or broken conventions light another batch of lights:</p>
     <ul>
       <li>2013: Android's SecureRandom flaw produced colliding nonces
         (<a href="https://bitcoin.org/en/alert/2013-08-11-android" target="_blank" rel="noopener">bitcoin.org alert</a>).</li>
@@ -191,15 +209,16 @@
 
   <section>
     <h2>Method and disclosure</h2>
-    <p>The scan processed 760 GB of chain data in about 30 minutes on 32 cores. Every reported key
-      was recovered in memory and verified against the on-chain public key; no private keys are
-      stored in any artifact. Balances came from a local chain scan and transaction index, matched
-      against the node's UTXO set with zero mismatches. The full address table, the CSV, and the
-      precise figure definitions are in <a href="./">the audit report</a>.</p>
+    <p>The scan processed 760 GB of chain data in about 30 minutes. Every reported key was
+      recovered in memory and verified against the on-chain public key; no private keys are stored
+      in any artifact. Balances came from a local chain scan and transaction index, matched against
+      the node's UTXO set with zero mismatches. The full address table, the CSV, and the precise
+      figure definitions are in <a href="./">the audit report</a>.</p>
     <p>If your address appears in the table, treat the key as public knowledge: never send funds to
-      it again.</p>
+      it again. The forest does not forget a light.</p>
   </section>
 </main>
+<!-- X-COPY-END -->
 
 <footer>
   <p><small>Snapshot amounts can change. No private keys are included.
