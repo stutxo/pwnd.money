@@ -29,7 +29,15 @@
       border-radius: 999px; text-decoration: none; }
     .chips a:hover { border-color: #202124; }
     tbody tr:target { background: #fff8e1; scroll-margin-top: 4rem; }
+    .timeline { margin: 1.5rem 0; }
+    .timeline svg { width: 100%; max-width: 44rem; height: auto; display: block; }
+    .timeline rect { fill: #0759a5; }
+    .timeline text { fill: #5f6368; font-size: 9px; }
+    .timeline .tval { font-weight: 600; }
+    .timeline figcaption { color: #5f6368; font-size: .85rem; margin-top: .25rem; }
     @media (prefers-color-scheme: dark) {
+      .timeline rect { fill: #8ab4f8; }
+      .timeline text, .timeline figcaption { fill: #9aa0a6; color: #9aa0a6; }
       body { background: #151618; color: #e4e5e7; }
       a { color: #8ab4f8; }
       .meta, small, .summary dt { color: #9aa0a6; }
@@ -119,6 +127,45 @@
     <p class="meta">“Spent after exposure” is value that moved out of an address <em>after</em> its key
       became publicly computable. It is not proof of theft: on-chain data cannot distinguish an owner
       moving funds from a stranger sweeping them.</p>
+    <figure class="timeline">
+      <svg viewBox="0 0 640 96" role="img" aria-label="Bar chart of last on-chain activity of affected addresses by year, 2012 to 2026">
+    <rect x="10" y="66" width="30" height="12" rx="1"><title>2012: 12 addresses</title></rect>
+    <text x="25" y="92" text-anchor="middle">2012</text>
+    <rect x="52" y="73" width="30" height="5" rx="1"><title>2013: 2 addresses</title></rect>
+    <text x="67" y="92" text-anchor="middle">2013</text>
+    <rect x="94" y="53" width="30" height="25" rx="1"><title>2014: 52 addresses</title></rect>
+    <text x="109" y="92" text-anchor="middle">2014</text>
+    <text class="tval" x="109" y="50" text-anchor="middle">52</text>
+    <rect x="136" y="70" width="30" height="8" rx="1"><title>2015: 5 addresses</title></rect>
+    <text x="151" y="92" text-anchor="middle">2015</text>
+    <rect x="178" y="72" width="30" height="6" rx="1"><title>2016: 3 addresses</title></rect>
+    <text x="193" y="92" text-anchor="middle">2016</text>
+    <rect x="220" y="18" width="30" height="60" rx="1"><title>2017: 292 addresses</title></rect>
+    <text x="235" y="92" text-anchor="middle">2017</text>
+    <text class="tval" x="235" y="15" text-anchor="middle">292</text>
+    <rect x="262" y="72" width="30" height="6" rx="1"><title>2018: 3 addresses</title></rect>
+    <text x="277" y="92" text-anchor="middle">2018</text>
+    <rect x="304" y="72" width="30" height="6" rx="1"><title>2019: 3 addresses</title></rect>
+    <text x="319" y="92" text-anchor="middle">2019</text>
+    <rect x="346" y="67" width="30" height="11" rx="1"><title>2020: 10 addresses</title></rect>
+    <text x="361" y="92" text-anchor="middle">2020</text>
+    <rect x="388" y="69" width="30" height="9" rx="1"><title>2021: 6 addresses</title></rect>
+    <text x="403" y="92" text-anchor="middle">2021</text>
+    <rect x="430" y="66" width="30" height="12" rx="1"><title>2022: 12 addresses</title></rect>
+    <text x="445" y="92" text-anchor="middle">2022</text>
+    <rect x="472" y="72" width="30" height="6" rx="1"><title>2023: 3 addresses</title></rect>
+    <text x="487" y="92" text-anchor="middle">2023</text>
+    <rect x="514" y="71" width="30" height="7" rx="1"><title>2024: 4 addresses</title></rect>
+    <text x="529" y="92" text-anchor="middle">2024</text>
+    <rect x="556" y="70" width="30" height="8" rx="1"><title>2025: 5 addresses</title></rect>
+    <text x="571" y="92" text-anchor="middle">2025</text>
+    <rect x="598" y="69" width="30" height="9" rx="1"><title>2026: 7 addresses</title></rect>
+    <text x="613" y="92" text-anchor="middle">2026</text>
+    <text class="tval" x="613" y="66" text-anchor="middle">7</text>
+      </svg>
+      <figcaption>Last on-chain activity of the 419 affected addresses with observed history, by year
+        (square-root scale). The 2017 peak was the mass-exposure era — and the 2026 bar is not zero.</figcaption>
+    </figure>
     <nav aria-label="Report sections">
       <a href="#findings">Address table</a>
       <a href="#other-results">Other findings</a>
@@ -271,6 +318,15 @@
         their keys became publicly computable. Some of that was certainly owners spending as usual,
         and watcher bots do sweep known-broken keys within minutes of any deposit. What can be said:
         every affected address was empty at the snapshot.</p>
+    </details>
+    <details>
+      <summary>Who takes the money?</summary>
+      <p>Mostly automated watchers. Once a key is publicly computable — a weak brainwallet, a reused
+        nonce, <code>d = 1</code> — bots monitor its addresses around the clock. The moment a deposit
+        confirms, a bot broadcasts a spend; when several bots compete, they outbid each other's fees
+        until the miner takes most of it. Deposit to gone: typically minutes. That is why every
+        affected address here reads zero — and why sending "just a little, to test" to a listed
+        address donates it to the fastest bot.</p>
     </details>
     <details>
       <summary>Does this include the Coldcard data?</summary>
