@@ -227,9 +227,10 @@
   <section aria-labelledby="s-messages">
     <h2 id="s-messages">The chain as a message board</h2>
     <p>Some outputs need no key at all: a locking script that is just a data push evaluates as
-      true, so anyone can spend them. Eleven such outputs hold a little over 15,000 sats, and
-      their scripts are text messages. The dust-value ones presumably persist because sweeping
-      them costs more in fees than they pay; the larger ones are simply up for grabs.</p>
+      true, so anyone can spend them. Their scripts are text messages, and they hold a little
+      over 15,000 sats, verified unspent at block 963,084. The dust-value ones presumably persist
+      because sweeping them costs more in fees than they pay; the larger ones are simply up for
+      grabs.</p>
     <ul>
       <li><a href="https://mempool.space/tx/7372defce8713521da62fe0284b4fd23c3f33c8a7a23275788b50762db8fc0a3" target="_blank" rel="noopener">One
         April 2026 transaction</a> carries seven 21-sat message outputs: a resignation note
@@ -239,8 +240,8 @@
       <li><a href="https://mempool.space/tx/84b577cb8c5862ff16671db007b5690ff0929fea60c39c1437f25ee0c2b9c299" target="_blank" rel="noopener">A
         July 2026 transaction</a> with 88 outputs ends in a 4,096-sat output whose entire locking
         script is the text "Money money money". Its OP_RETURN reads "You owe me money".</li>
-      <li>"A pagar las deudas!" (21 sats), plus about 11,000 sats across bare OP_TRUE outputs,
-        all spendable by anyone.</li>
+      <li>"A pagar las deudas!" (21 sats), plus 11,173 bare OP_TRUE outputs holding one satoshi
+        each (every bigger one was already swept long ago). All of it spendable by anyone.</li>
     </ul>
   </section>
 
