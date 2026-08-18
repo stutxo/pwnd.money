@@ -133,8 +133,9 @@
       birth, guessed, counted to, or posted in public.</p>
     <ul>
       <li>475 nonce-reuse findings, each cryptographically proven, across 432 addresses.</li>
-      <li>3,207 private keys in total: 475 from plain nonce reuse, 1,011 more by transitive
-        propagation, and 1,721 net-new from the cross-key census.</li>
+      <li>3,207 private keys in total: 1,486 proven by same-key and transitive nonce analysis
+        (475 verified findings across 432 addresses), plus 1,721 net-new keys from the cross-key
+        census.</li>
       <li>2,354.29 BTC moved out of affected addresses after their keys became publicly computable;
         82% of it came from one 2013 wallet whose owner kept spending as usual.</li>
       <li>0 BTC remained in any affected address at the snapshot. The watchers see to that: deposits
@@ -152,7 +153,7 @@
       transaction</a> with the same nonce (later publicly dissected
       <a href="https://bitcointalk.org/index.php?topic=919194.0" target="_blank" rel="noopener">on
       bitcointalk</a>). From that block on, anyone could compute its key.</p>
-    <p>Nobody took anything. The wallet simply kept operating: <a href="https://mempool.space/tx/f1021b6e62eccb35c88cb4e88ad34133d8121c065802d8eaf609664c621f6f03" target="_blank" rel="noopener">533.82
+    <p>No clear on-chain evidence of theft ever appeared. The wallet simply kept operating: <a href="https://mempool.space/tx/f1021b6e62eccb35c88cb4e88ad34133d8121c065802d8eaf609664c621f6f03" target="_blank" rel="noopener">533.82
       BTC spent four days later</a>, about 1,930.26 BTC over the following weeks, 6,622.25 BTC across
       its lifetime. The activity before and after the leak is one continuous pattern, almost certainly
       the owner's own. It was last seen spending 9,749 sats in December 2025.</p>
@@ -167,14 +168,14 @@
         <tr><td>May 2013</td><td class="num">0.00 BTC</td></tr>
       </tbody>
     </table>
-    <p>The 1,930 BTC was flow-through, not a vault: money arrived and was spent within days. And in
-      early 2013 there was nobody to notice the leak anyway. Duplicate-nonce theft became a practiced,
-      scanned-for attack with the August 2013 Android SecureRandom incident, six months later, by
-      which time this address was already empty. Today the key is on every watchlist, and anything
-      sent to it is swept within minutes.</p>
+    <p>The 1,930 BTC was flow-through, not a vault: money arrived and was spent within days. And
+      systematic nonce-reuse scanning was still months away: it became a practiced attack with the
+      August 2013 Android SecureRandom incident, by which time this address was already empty.
+      Today the key is widely monitored, and anything sent to it is swept within minutes.</p>
     <p>This single address accounts for 82% of the audit's 2,354 BTC spent-after-exposure total, and
       it anchors what that figure really means: value that was in motion while the key was public,
-      not proof of theft. It stood in the open for years, and no one ever took the shot.</p>
+      not proof of theft. It stood in the open for years, with no clear evidence anyone ever took
+      the shot.</p>
   </section>
 
   <section aria-labelledby="s-nonce">
@@ -187,7 +188,8 @@
       (<a href="https://bitcointalk.org/index.php?topic=1118704.0" target="_blank" rel="noopener">the
       most repeated r value on the blockchain</a>).</p>
     <p>A full census recovered and verified <strong>1,956 distinct private keys</strong> from
-      2,552,742 signatures, including 1,034 keys that signed only once. Evidence: <a href="https://mempool.space/tx/05f331dfd6e16ecb28eb05f2b4cb0ffa25e82ec6489a5f37be3242a8e044faa9" target="_blank" rel="noopener">an
+      2,552,742 signatures, including 1,034 keys that signed only once. Only 237 of those keys had
+      been proven by the earlier passes; the census found the other 1,719. Evidence: <a href="https://mempool.space/tx/05f331dfd6e16ecb28eb05f2b4cb0ffa25e82ec6489a5f37be3242a8e044faa9" target="_blank" rel="noopener">an
       early cluster transaction</a> and a <a href="https://mempool.space/tx/2646b0f5633b45c5e2acb0eec639dea8da92d5d17a16fa9479ef988bede06d4a" target="_blank" rel="noopener">November
       2024 puzzle transaction</a>. The main pipeline nearly missed this cluster: it sampled groups
       with more than 200 members, assuming giants were protocol artifacts. This one was real.</p>
@@ -246,8 +248,8 @@
 
   <section aria-labelledby="s-data">
     <h2 id="s-data">Keys posted as public data</h2>
-    <p>5,095 distinct private keys were found sitting in the chain as data: OP_RETURNs, test
-      strings, puzzle material. <a href="https://mempool.space/tx/7342ee671991a000081ec7b248772e2ae0197252e90a862c4ba18c7f159501f0" target="_blank" rel="noopener">One
+    <p>5,095 distinct private keys were found embedded in the chain as data, each matching a public
+      key used on chain: OP_RETURNs, test strings, puzzle material. <a href="https://mempool.space/tx/7342ee671991a000081ec7b248772e2ae0197252e90a862c4ba18c7f159501f0" target="_blank" rel="noopener">One
       transaction</a> embeds <code>sha256("")</code> as a key, and that key controls a funded
       address.</p>
   </section>
@@ -301,7 +303,8 @@
         blocks, the signature of another wallet's broken random number generator.</li>
       <li>71,749 signatures carry a legacy flag bug: signed with SIGHASH_SINGLE against a missing
         output, they commit to the constant <code>z = 1</code> instead of to any transaction, so
-        anyone can copy one onto a different payment from the same key, no private key needed.
+        anyone can replay one against another compatible legacy UTXO of the same key when the new
+        transaction reproduces the out-of-range condition, no private key needed.
         <a href="https://mempool.space/address/15iwPhxErFDyQTJew81ok9hCbQNhyWuXq1" target="_blank" rel="noopener">One
         address</a> has 7 of them.</li>
       <li>287 signatures from at least 46 keys used <code>k = 1</code>
@@ -309,11 +312,12 @@
         one used <code>k = d</code>, its own private key as the nonce, in
         <a href="https://mempool.space/tx/ee3a72eaeb28bdc5b5dd550de526e167b5e9d35e4a42070bd9d5fde2bcb4fea3" target="_blank" rel="noopener">block
         450,655</a>.</li>
-      <li>Every signature's r was matched against the x-coordinate of all 135.7 million on-chain
-        public keys. <a href="https://mempool.space/tx/ae151af74211c679c13054bb5a96c7c8296797ae8c601b34fe226230988e2c1a" target="_blank" rel="noopener">One
+      <li>Every signature's r was matched against the x-coordinate of all 135.7 million signing
+        keys with two or more signatures, plus a filtered pass over the rest.
+        <a href="https://mempool.space/tx/ae151af74211c679c13054bb5a96c7c8296797ae8c601b34fe226230988e2c1a" target="_blank" rel="noopener">One
         2020 spend</a> signed with a nonce that was a 2015-compromised key's private scalar.</li>
-      <li>In a 2,000,000-key sample, 24 more keys fell to per-key attacks the plain group matching
-        had missed: 13 had signed twice with one identical nonce, 7 had nonces differing by
+      <li>In a 2,000,000-key sample, 24 more keys fell to per-key attacks outside the primary
+        grouping: 13 had signed twice with one identical nonce, 7 had nonces differing by
         exactly 1, and 4 had nonces short enough to fall to a lattice (HNP) attack.</li>
     </ul>
   </section>
@@ -349,7 +353,7 @@
       their keys became publicly computable, and another 255.74 BTC moved inside the exposure blocks
       themselves. Some of that was certainly owners spending as usual, as the wallet that never
       noticed shows. What can be said: every affected address was empty at the snapshot, and
-      anything sent to one today is swept by bots within minutes.</p>
+      anything sent to one today is typically swept by bots within minutes.</p>
     <p>Two related curiosities are not spendable by key recovery alone:
       <a href="https://mempool.space/address/31oSGBBNrpCiENH3XMZpiP6GTC4tad4bMy" target="_blank" rel="noopener">17.24
       BTC in a 3-of-5 multisig</a> whose fourth key leaked (spending still requires three
@@ -460,8 +464,9 @@
 
   <section aria-labelledby="s-method">
     <h2 id="s-method">Method and disclosure</h2>
-    <p>The scan processed 760 GB of chain data in about 30 minutes on a local Bitcoin Core full
-      node (block files plus transaction index). Every reported key was recovered in memory and
+    <p>The scan processed 760 GB of chain data in about 30 minutes on 32 cores, reading a local
+      Bitcoin Core node's block files and transaction index. Every reported key was recovered in
+      memory and
       verified against the on-chain public key; no private keys are stored in any artifact. Balances came from a local chain scan and transaction index, matched against
       the node's UTXO set with zero mismatches. The full address table, the CSV, and the precise
       figure definitions are below.</p>
@@ -574,7 +579,7 @@
           <tr><th scope="row">Keys embedded as data</th><td>5,095 distinct private keys found in OP_RETURNs, test strings, and puzzle material. Example: <a href="https://mempool.space/tx/7342ee671991a000081ec7b248772e2ae0197252e90a862c4ba18c7f159501f0" target="_blank" rel="noopener">this transaction</a> embeds <code>sha256("")</code> as a key, and it controls a funded address.</td></tr>
           <tr><th scope="row">Replayable signatures</th><td>71,749 SIGHASH_SINGLE signatures signed the constant <code>z = 1</code> and can be replayed against another UTXO of the same key. Example: <a href="https://mempool.space/address/15iwPhxErFDyQTJew81ok9hCbQNhyWuXq1" target="_blank" rel="noopener"><code>15iwPhxErFDyQTJew81ok9hCbQNhyWuXq1</code></a> (7 such signatures).</td></tr>
           <tr id="row-fixed-nonce"><th scope="row">Shared fixed nonce</th><td>2,552,742 signatures used the constant nonce <code>k = (n−1)/2</code> (r = <code>0000…3b78ce…</code>), a July-2015 dust-sweep trick: the short DER encoding saved fees. Full census: <strong>1,956 distinct private keys recovered and verified</strong>, including 1,034 keys that signed only once. Because k is a known constant, a single such signature is enough to expose the key. Evidence: <a href="https://mempool.space/tx/05f331dfd6e16ecb28eb05f2b4cb0ffa25e82ec6489a5f37be3242a8e044faa9" target="_blank" rel="noopener">an early cluster transaction</a> and a <a href="https://mempool.space/tx/2646b0f5633b45c5e2acb0eec639dea8da92d5d17a16fa9479ef988bede06d4a" target="_blank" rel="noopener">November 2024 puzzle transaction</a>.</td></tr>
-          <tr><th scope="row">Cross-key nonce join</th><td>Every signature's r was matched against the x-coordinate of all 135.7 million on-chain public keys (keys sign with another key's private scalar as nonce). Together with transitive nonce propagation this raises the verified total to <strong>3,207 private keys</strong>; the 1,721 net-new keys held 0 BTC across 11,906 checked address variants. Example: <a href="https://mempool.space/tx/ae151af74211c679c13054bb5a96c7c8296797ae8c601b34fe226230988e2c1a" target="_blank" rel="noopener">this 2020 spend</a> used a 2015-compromised key's private scalar as its nonce.</td></tr>
+          <tr><th scope="row">Cross-key nonce join</th><td>Every signature's r was matched against the x-coordinate of all 135.7 million signing keys with two or more signatures, plus a filtered pass over the rest (keys sign with another key's private scalar as nonce). Together with transitive nonce propagation this raises the verified total to <strong>3,207 private keys</strong>; the 1,721 net-new keys held 0 BTC across 11,906 checked address variants. Example: <a href="https://mempool.space/tx/ae151af74211c679c13054bb5a96c7c8296797ae8c601b34fe226230988e2c1a" target="_blank" rel="noopener">this 2020 spend</a> used a 2015-compromised key's private scalar as its nonce.</td></tr>
           <tr><th scope="row">Single-signature leaks</th><td>287 signatures from at least 46 keys used <code>k = 1</code> (e.g. <a href="https://mempool.space/address/1KonZ9DA1eW4rW6eKzjhw2yTjjvXEDTKia" target="_blank" rel="noopener"><code>1KonZ9DA1eW4rW6eKzjhw2yTjjvXEDTKia</code></a>); 336 used <code>|k| ≤ 2<sup>24</sup></code>; one used <code>k = d</code> (<a href="https://mempool.space/tx/ee3a72eaeb28bdc5b5dd550de526e167b5e9d35e4a42070bd9d5fde2bcb4fea3" target="_blank" rel="noopener">block 450,655</a>).</td></tr>
           <tr><th scope="row">Taproot / Schnorr</th><td>No same-key nonce reuse. Two <code>R</code> values repeated across different signing keys; neither exposed a key. No key-path <code>k = d</code> across 352 million outputs.</td></tr>
           <tr><th scope="row">Deep per-key attacks</th><td>In a 2,000,000-key sample of the 135.7 million keys with 2+ signatures, 24 more keys fell without any plain reuse: 13 had signed twice with one identical nonce, 7 had nonces differing by exactly 1, and 4 had nonces short enough (<code>|k| &lt; 2<sup>128</sup></code>) to fall to a lattice (HNP) attack.</td></tr>
@@ -629,7 +634,8 @@
       <summary>Is my wallet affected?</summary>
       <p>Almost certainly not. Every key here was exposed by broken signing software that reused
         randomness. Bitcoin Core, Electrum, hardware wallets, and mainstream mobile wallets derive
-        nonces deterministically (RFC&nbsp;6979) and do not have this failure. The scan covered the
+        nonces deterministically (RFC 6979 for ECDSA, BIP340 for Schnorr) and do not have this
+        failure. The scan covered the
         entire chain; every affected address is listed in the table above. The cross-key census adds
         1,721 further proven keys; all were empty, so they are not listed individually.</p>
     </details>
@@ -644,10 +650,12 @@
       <summary>What is the cross-key census?</summary>
       <p>Classic nonce-reuse detection compares a key's own signatures with each other. The census
         instead compared every signature's nonce fingerprint <code>r</code> against the public point
-        of <em>every</em> key ever seen on chain: if they match, that signature's supposedly random
+        of every key with two or more signatures ever seen on chain (135.7 million), extended to
+        single-signature keys in a filtered pass: if they match, that signature's supposedly random
         nonce was actually another key's private scalar, so when that key is known, one signature
         is enough to expose the signer. Counting every such case chain-wide (a census, not a sample),
-        together with transitive propagation, raised the verified total from 475 to 3,207 keys.</p>
+        together with transitive propagation, raised the verified total from 475 findings to
+        3,207 keys.</p>
     </details>
     <details>
       <summary>Were the coins stolen?</summary>
@@ -673,8 +681,11 @@
         signature existed, so it needs a different analysis than this signature-level audit. That work is
         in progress and will be added in a future update;
         <a href="https://wizardsardine.com/blog/coldcard-vuln-deep-dive/" target="_blank" rel="noopener">this
-        incident report</a> reconstructs the flaw in detail. If you generated a seed on a Coldcard since
-        2021, move your funds to a freshly generated wallet.</p>
+        incident report</a> reconstructs the flaw in detail. If your seed was generated on affected
+        Coldcard firmware, migrate it according to
+        <a href="https://blog.coinkite.com/coldcard-mk3-seed-generation-warning/" target="_blank" rel="noopener">Coinkite's
+        official advisory</a>: the dice-entropy exception may apply, and a firmware update alone
+        does not repair an existing seed.</p>
     </details>
     <details>
       <summary>My address is listed. What should I do?</summary>
