@@ -227,21 +227,32 @@
   <section aria-labelledby="s-messages">
     <h2 id="s-messages">The chain as a message board</h2>
     <p>Some outputs need no key at all: a locking script that is just a data push evaluates as
-      true, so anyone can spend them. Their scripts are text messages, and they hold a little
-      over 15,000 sats, verified unspent at block 963,084. The dust-value ones presumably persist
+      true, so anyone can spend them. Their scripts are mostly text messages, and they hold a
+      little over 15,000 sats, verified unspent at block 963,084. The dust-value ones presumably persist
       because sweeping them costs more in fees than they pay; the larger ones are simply up for
       grabs.</p>
     <ul>
-      <li><a href="https://mempool.space/tx/7372defce8713521da62fe0284b4fd23c3f33c8a7a23275788b50762db8fc0a3" target="_blank" rel="noopener">One
-        April 2026 transaction</a> carries seven 21-sat message outputs: a resignation note
-        addressed to MARA ("PortlandHODL here -&gt; MARA: I resign effectively when this TX is
-        mined."), gratitude to "Fred Thiel", a pro-Slipstream message and an anti-Slipstream
-        message in the same transaction, some Linkin Park nostalgia, and a prayer.</li>
+      <li>An open letter in
+        <a href="https://mempool.space/tx/7372defce8713521da62fe0284b4fd23c3f33c8a7a23275788b50762db8fc0a3" target="_blank" rel="noopener">one
+        April 2026 transaction</a>, seven 21-sat outputs:
+        <ul>
+          <li>"PortlandHODL here -&gt; MARA: I resign effectively when this TX is mined."</li>
+          <li>"Gratitude is extended to Fred Thiel and Mike."</li>
+          <li>"Slipstream is freedom and censorship resistance."</li>
+          <li>"Slipstream should be shuttered, nobody with competence to maintain remains."</li>
+          <li>"The flame of innovation burns bright in my soul and a hunger for success
+            remains"</li>
+          <li>"Listening to Linkin Park, reminiscing all that has transpired during the last 2
+            years. A lot."</li>
+          <li>"Praise the Lord and may Christ guide me."</li>
+        </ul>
+      </li>
       <li><a href="https://mempool.space/tx/84b577cb8c5862ff16671db007b5690ff0929fea60c39c1437f25ee0c2b9c299" target="_blank" rel="noopener">A
         July 2026 transaction</a> with 88 outputs ends in a 4,096-sat output whose entire locking
         script is the text "Money money money". Its OP_RETURN reads "You owe me money".</li>
-      <li>"A pagar las deudas!" (21 sats), plus 11,173 bare OP_TRUE outputs holding one satoshi
-        each (every bigger one was already swept long ago). All of it spendable by anyone.</li>
+      <li>"A pagar las deudas!" and one more bare-push output (21 sats each), plus 11,173 bare
+        OP_TRUE outputs holding one satoshi each (every bigger one was already swept long ago).
+        All of it spendable by anyone.</li>
     </ul>
   </section>
 
