@@ -224,13 +224,41 @@
       address.</p>
   </section>
 
+  <section aria-labelledby="s-messages">
+    <h2 id="s-messages">The chain as a message board</h2>
+    <p>Some outputs need no key at all: a locking script that is just a data push evaluates as
+      true, so anyone can spend them. Eleven such outputs hold a little over 15,000 sats, and
+      their scripts are text messages. The dust-value ones presumably persist because sweeping
+      them costs more in fees than they pay; the larger ones are simply up for grabs.</p>
+    <ul>
+      <li><a href="https://mempool.space/tx/7372defce8713521da62fe0284b4fd23c3f33c8a7a23275788b50762db8fc0a3" target="_blank" rel="noopener">One
+        April 2026 transaction</a> carries seven 21-sat message outputs: a resignation note
+        addressed to MARA ("PortlandHODL here -&gt; MARA: I resign effectively when this TX is
+        mined."), gratitude to "Fred Thiel", a pro-Slipstream message and an anti-Slipstream
+        message in the same transaction, some Linkin Park nostalgia, and a prayer.</li>
+      <li><a href="https://mempool.space/tx/84b577cb8c5862ff16671db007b5690ff0929fea60c39c1437f25ee0c2b9c299" target="_blank" rel="noopener">A
+        July 2026 transaction</a> with 88 outputs ends in a 4,096-sat output whose entire locking
+        script is the text "Money money money". Its OP_RETURN reads "You owe me money".</li>
+      <li>"A pagar las deudas!" (21 sats), plus about 11,000 sats across bare OP_TRUE outputs,
+        all spendable by anyone.</li>
+    </ul>
+  </section>
+
   <section aria-labelledby="s-corners">
     <h2 id="s-corners">Stranger corners</h2>
     <ul>
       <li>The oldest exposure in the audit:
         <a href="https://mempool.space/address/1A8TY7dxURcsRtPBs7fP6bDVzAgpgP4962" target="_blank" rel="noopener"><code>1A8TY7dxURcsRtPBs7fP6bDVzAgpgP4962</code></a>
         reused a nonce in block 121,481, May 2, 2011, twenty months before the attack's first
-        public write-up.</li>
+        public write-up. The same key was still spending in April 2026, 0.77 BTC moved since its
+        leak.</li>
+      <li>The unluckiest week:
+        <a href="https://mempool.space/address/1BTrViTDXhWrdw5ErBWSyP5LdzYmeuDTr2" target="_blank" rel="noopener"><code>1BTrViTDXhWrdw5ErBWSyP5LdzYmeuDTr2</code></a>
+        leaked its key eight separate times in nine days in March 2016; 160.27 BTC moved after
+        exposure.</li>
+      <li>Another burst went undocumented: 13 findings first exposed in the same weeks of
+        August and September 2022, several keys in the same blocks, the signature of another
+        wallet's broken random number generator.</li>
       <li>71,749 signatures carry a flag bug: signed with SIGHASH_SINGLE against a missing output,
         they commit to the constant <code>z = 1</code> instead of to any transaction, so anyone can
         copy one onto a different payment from the same key, no private key needed.
