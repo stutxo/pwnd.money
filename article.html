@@ -353,7 +353,9 @@
         (<a href="https://bitcointalk.org/index.php?topic=1306983" target="_blank" rel="noopener">announcement</a>,
         <a href="https://mempool.space/tx/08389f34c98c606322740c0be6a7125d9860bb8d5cb182c02f98461e5fa6cd15" target="_blank" rel="noopener">funding
         transaction</a>) and Castellucci's <a href="https://rya.nc/files/cracking_cryptocurrency_brainwallets.pdf" target="_blank" rel="noopener">DEF
-        CON talk</a>.</li>
+        CON talk</a>. It is still being solved:
+        <a href="https://privatekeys.pw/puzzles/bitcoin-puzzle-tx" target="_blank" rel="noopener">#135
+        fell in July 2026</a>, 13.5 BTC to a solver with 200 GPUs.</li>
       <li><strong>2016 · the drainer census:</strong> <a href="https://jbonneau.com/doc/VBCKM16-FC-bitcoin_brain_wallets.pdf" target="_blank" rel="noopener"><em>The
         Bitcoin Brain Drain</em></a> (FC '16) counts 884 live brainwallets and documents the
         competing "drainer" bots that liquidate them on sight. This audit's dictionary finds 6,367
@@ -374,6 +376,11 @@
       <li><strong>2024 · malicious firmware:</strong> Dark Skippy, seed exfiltration inside
         signatures (<a href="https://darkskippy.com/" target="_blank" rel="noopener">disclosure</a>);
         never seen in the wild.</li>
+      <li><strong>2025 · nonces need not match:</strong> a known linear relation between two
+        nonces is enough to recover the key in closed form
+        (<a href="https://eprint.iacr.org/2025/705" target="_blank" rel="noopener">Gilchrist et al.,
+        ePrint 2025/705</a>). This audit's deep sample found 7 keys whose two nonces differed by
+        exactly 1.</li>
       <li><strong>2026 · the Coldcard entropy flaw:</strong> seeds leaked at generation time for
         five years (<a href="https://wizardsardine.com/blog/coldcard-vuln-deep-dive/" target="_blank" rel="noopener">incident
         report</a>); the coordinated sweep is itself on-chain: 517 drain transactions and 134.9 BTC
