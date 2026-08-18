@@ -3,69 +3,126 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The dark forest: Bitcoin signatures | pwnd.money</title>
+  <title>The Glass Forest: How Bad Bitcoin Signatures Leak Private Keys | pwnd.money</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💸</text></svg>">
-  <meta name="description" content="3,207 Bitcoin private keys recovered from on-chain data: the wallet that never noticed, the nonce reused 2.55 million times, and the bots that never stop watching.">
+  <meta name="description" content="A full-chain audit of 3.76 billion Bitcoin signatures: 3,207 private keys recovered from on-chain data and cryptographically verified. The story of the Glass Forest.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://pwnd.money/article.html">
-  <meta property="og:title" content="The dark forest: Bitcoin signatures">
-  <meta property="og:description" content="3,207 Bitcoin private keys recovered from on-chain data: the wallet that never noticed, the nonce reused 2.55 million times, and the bots that never stop watching.">
+  <meta property="og:title" content="The Glass Forest: How Bad Bitcoin Signatures Leak Private Keys">
+  <meta property="og:description" content="3,207 Bitcoin private keys recovered from on-chain data: the wallet that never noticed, the nonce reused 2.55 million times, and the machines that never stop watching.">
   <meta property="og:image" content="https://pwnd.money/cover.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="The dark forest: Bitcoin signatures">
-  <meta name="twitter:description" content="3,207 Bitcoin private keys recovered from on-chain data: the wallet that never noticed, the nonce reused 2.55 million times, and the bots that never stop watching.">
+  <meta name="twitter:title" content="The Glass Forest: How Bad Bitcoin Signatures Leak Private Keys">
+  <meta name="twitter:description" content="3,207 Bitcoin private keys recovered from on-chain data: verified, evidenced, and explained.">
   <meta name="twitter:image" content="https://pwnd.money/cover.png">
   <style>
     @font-face { font-family: 'Space Grotesk'; src: url('fonts/space-grotesk.woff2') format('woff2');
       font-weight: 300 700; font-style: normal; font-display: swap; }
-    body { max-width: 46rem; margin: 3rem auto; padding: 0 1.25rem; color: #202124;
-      font: 16px/1.6 system-ui, sans-serif; }
-    h1 { margin: 0 0 .75rem; font-size: clamp(1.9rem, 4.5vw, 2.9rem); line-height: 1.12;
+    body { max-width: 74rem; margin: 3rem auto; padding: 0 1.25rem; color: #202124;
+      font: 16px/1.55 system-ui, sans-serif; }
+    h1 { max-width: 22ch; margin: 0 0 .75rem; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.08;
       font-family: 'Space Grotesk', system-ui, sans-serif; font-weight: 700; letter-spacing: -.01em; }
-    h2 { margin-top: 2.75rem; padding-top: .6rem; border-top: 1px solid #c9c9c9;
+    h2 { margin-top: 3.5rem; padding-top: .6rem; border-top: 1px solid #c9c9c9;
       font-family: 'Space Grotesk', system-ui, sans-serif; font-weight: 600; }
+    section { scroll-margin-top: 1rem; }
+    .chips-label { margin-bottom: .4rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 1.5rem; padding: 0; list-style: none; }
+    .chips a { display: inline-block; padding: .25rem .75rem; border: 1px solid #bbb;
+      border-radius: 999px; text-decoration: none; }
+    .chips a:hover { border-color: #202124; }
+    tbody tr:target { background: #fff8e1; scroll-margin-top: 4rem; }
+    .timeline { margin: 1.5rem 0; }
+    .timeline svg { width: 100%; max-width: 44rem; height: auto; display: block; }
+    .timeline rect { fill: #0759a5; }
+    .timeline text { fill: #5f6368; font-size: 9px; }
+    .timeline .tval { font-weight: 600; }
+    .timeline figcaption { color: #5f6368; font-size: .85rem; margin-top: .25rem; }
+    p, li { max-width: 72ch; }
     a { color: #0759a5; }
     code { overflow-wrap: anywhere; }
+    nav { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin: 1.5rem 0 2.5rem; }
+    .lede { max-width: 68ch; font-size: 1.1rem; }
     .meta, small { color: #5f6368; }
-    .lede { font-size: 1.15rem; }
-    .cover { margin: 1.5rem 0; }
-    .cover img { width: 100%; height: auto; border: 1px solid #d9d9d9; }
-    ul { padding-left: 1.25rem; }
-    li { margin-bottom: .4rem; }
+    .status { max-width: 68ch; margin: 2rem 0; padding-left: 1rem; border-left: .25rem solid #2f6f4e;
+      font-size: 1.1rem; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+      margin: 1rem 0; padding: .75rem 0; border-block: 1px solid #d9d9d9; }
+    .summary div { padding: .4rem 1rem .4rem 0; }
+    .summary dt { color: #5f6368; font-size: .85rem; }
+    .summary dd { margin: .15rem 0 0; font-size: 1.1rem; font-weight: 600;
+      font-family: 'Space Grotesk', system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+    table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+    caption { padding: .6rem 0; text-align: left; font-weight: 650; }
+    th, td { padding: .55rem .65rem; border-bottom: 1px solid #d9d9d9; text-align: left; vertical-align: top; }
+    thead th { position: sticky; top: 0; background: white; border-bottom: 2px solid #888; }
+    .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .scroll { overflow-x: auto; margin: 1rem 0 2rem; }
+    .data-table { min-width: 58rem; }
+    .table-tools, .table-footer { display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: .75rem 1rem; margin: 1rem 0; }
+    .table-tools label { display: flex; align-items: center; gap: .4rem; }
+    .table-tools label:first-child { flex: 1 1 20rem; }
+    .table-tools input { width: 100%; max-width: 30rem; }
+    .table-tools input, .table-tools select, .table-tools > a { padding: .45rem .6rem; font: inherit; }
+    .table-tools > a { border: 1px solid #aaa; background: white; color: inherit; text-decoration: none; }
+    .sort { width: 100%; padding: 0 1rem 0 0; border: 0; background: none; color: inherit;
+      font: inherit; font-weight: inherit; text-align: inherit; cursor: pointer; }
+    .sort::after { content: " ↕"; color: #777; }
+    .sort.asc::after { content: " ↑"; }
+    .sort.desc::after { content: " ↓"; }
+    .num .sort { text-align: right; }
+    .pagination { display: flex; flex-wrap: wrap; gap: .25rem; margin: 0; padding: 0; list-style: none; }
+    .pagination button { min-width: 2.25rem; padding: .35rem .55rem; border: 1px solid #bbb;
+      background: white; color: inherit; font: inherit; cursor: pointer; }
+    .pagination .active button { border-color: #202124; background: #202124; color: white; }
+    .pagination .disabled button { border-color: transparent; cursor: default; }
+    details { margin: 1rem 0; }
+    summary { cursor: pointer; font-weight: 650; }
+    .compact { columns: 2 24rem; }
+    .compact li { margin-bottom: .35rem; break-inside: avoid; }
     footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #c9c9c9; }
+    @media (max-width: 40rem) { body { margin-top: 1.5rem; } }
+      .cover { margin: 1.5rem 0; }
+    .cover img { width: 100%; height: auto; border: 1px solid #d9d9d9; }
   </style>
 </head>
 <body>
 <main>
   <header>
     <p class="meta"><a href="./">pwnd.money</a> · Bitcoin key exposure audit</p>
-    <h1>The dark forest: Bitcoin signatures</h1>
+    <h1>The Glass Forest: How Bad Bitcoin Signatures Leak Private Keys</h1>
     <p class="lede">I scanned every signature ever confirmed on the Bitcoin blockchain, 3.76 billion
       of them from 1.41 billion transactions, and recovered 3,207 private keys from on-chain data
       alone. Each key was verified against its on-chain public key. No private keys are stored
-      anywhere, and every affected address was empty at the snapshot. These are the interesting
-      finds.</p>
-    <p class="lede">In Liu Cixin's dark forest, any civilization that reveals its position invites a
-      strike from unseen hunters. An exposed Bitcoin key works the same way. Every key below was a
-      light in the trees, and something was always watching.</p>
-    <p class="meta">2026-08-16 · Snapshot: block 961,768, 2026-08-09 20:00 UTC · All figures and the full
-      address table: <a href="./">the audit report</a></p>
-    <figure class="cover"><img src="cover.png" alt="Bar chart of affected addresses' last on-chain activity by year, peaking in 2017" width="1200" height="675"></figure>
+      anywhere, and every affected address was empty at the snapshot.</p>
+    <p class="lede">The dark forest is dangerous because you cannot see what is hiding in it.
+      Bitcoin is the opposite. Bitcoin is a glass forest. Every transaction is visible. Every
+      signature is exposed to inspection. Every mistake is preserved indefinitely. The forest is
+      full of machines that watch everyone at once: not because they know who will fail, but
+      because eventually someone will. These are the interesting finds; the full address table
+      and CSV are at the end.</p>
+    <p class="meta">Snapshot: block 962,942, 2026-08-17 20:19 UTC. Explorer links show current state. · <a href="./">Full address table and CSV</a></p>
   </header>
 
-  <section>
-    <h2>The short version</h2>
+<section aria-labelledby="story">
+    <h2 id="story">The short version</h2>
+    <p>A Bitcoin signature needs a one-time secret number, the nonce. Reuse it, pick it from a
+      small space, or let anyone guess it, and the private key falls out of the math: two
+      signatures with the same nonce, or one signature with a known one, is enough. This audit
+      measured every way that has ever happened on chain.</p>
     <ul>
       <li>475 nonce-reuse findings, each cryptographically proven, across 432 addresses.</li>
       <li>3,207 private keys in total once transitive and cross-key leaks are counted.</li>
       <li>2,354.29 BTC moved out of affected addresses after their keys became publicly computable.</li>
       <li>0 BTC remained in any affected address at the snapshot. The watchers see to that: deposits
         to known-weak keys are swept within minutes.</li>
+      <li>About 85% of the 475 keys leaked between 2012 and 2015, but the tail never stops: the
+        newest leaked in 2026.</li>
     </ul>
   </section>
 
-  <section>
-    <h2>The wallet that never noticed</h2>
+  <section aria-labelledby="s-unbothered">
+    <h2 id="s-unbothered">The wallet that never noticed</h2>
     <p>The largest spent-after-exposure case looks like an owner who never knew. On 2013-02-12, the
       wallet at <a href="https://mempool.space/address/1BMzWp77j7x3GKDYNbCP3df7YG3UEw1vVE" target="_blank" rel="noopener"><code>1BMzWp77j7x3GKDYNbCP3df7YG3UEw1vVE</code></a>
       signed two inputs of <a href="https://mempool.space/tx/6c2d0bbb87350cd18d93ede269817767b84715a6292a022c68b327f704ce486f" target="_blank" rel="noopener">one
@@ -74,13 +131,29 @@
       BTC spent four days later</a>, about 1,930.26 BTC over the following weeks, 6,622.25 BTC across
       its lifetime. The activity before and after the leak is one continuous pattern, almost certainly
       the owner's own. It was last seen spending 9,749 sats in December 2025.</p>
+    <p>Why did the hunters never strike? Because there was rarely anything to take, and soon there was
+      nothing. The balance over time:</p>
+    <table>
+      <thead><tr><th scope="col">Date</th><th scope="col" class="num">Balance</th></tr></thead>
+      <tbody>
+        <tr><td>2013-01-20 (peak, three weeks before the leak)</td><td class="num">619.40 BTC</td></tr>
+        <tr><td>2013-02-12 (exposure day)</td><td class="num">131.18 BTC</td></tr>
+        <tr><td>one month later</td><td class="num">42.71 BTC</td></tr>
+        <tr><td>May 2013</td><td class="num">0.00 BTC</td></tr>
+      </tbody>
+    </table>
+    <p>The 1,930 BTC was flow-through, not a vault: money arrived and was spent within days. And in
+      early 2013 there was nobody to notice the leak anyway. Duplicate-nonce theft became a practiced,
+      scanned-for attack with the August 2013 Android SecureRandom incident, six months later, by
+      which time this address was already empty. Today the key is on every watchlist, and anything
+      sent to it is swept within minutes.</p>
     <p>This single address accounts for 82% of the audit's 2,354 BTC spent-after-exposure total, and
       it anchors what that figure really means: value that was in motion while the key was public,
-      not proof of theft. The loudest light in the forest, and no shot ever came.</p>
+      not proof of theft. It stood in the open for years, and no one ever took the shot.</p>
   </section>
 
-  <section>
-    <h2>One nonce, 2.55 million signatures</h2>
+  <section aria-labelledby="s-nonce">
+    <h2 id="s-nonce">One nonce, 2.55 million signatures</h2>
     <p>The most reused nonce in chain history is the constant <code>k = (n−1)/2</code>, whose
       signature fingerprint <code>r</code> starts <code>0000…3b78ce…</code>. In July 2015 it was a
       dust-sweep trick: that k produces the shortest possible DER encoding, which saved fees. But
@@ -92,8 +165,8 @@
       with more than 200 members, assuming giants were protocol artifacts. This one was real.</p>
   </section>
 
-  <section>
-    <h2>People really used sha256("password")</h2>
+  <section aria-labelledby="s-brain">
+    <h2 id="s-brain">People really used sha256("password")</h2>
     <p>A 14.34-million-word dictionary of brainwallets (password hashed once with SHA-256 to make a
       private key) hit 6,439 passwords covering 6,367 funded addresses. Someone really used
       <a href="https://mempool.space/address/16ga2uqnF1NqpAuQeeg7sTCAdtDUwDyJav" target="_blank" rel="noopener"><code>sha256("password")</code></a>.
@@ -101,42 +174,72 @@
       and <a href="https://mempool.space/address/1Q7f2rL2irjpvsKVys5W2cmKJYss82rNCy" target="_blank" rel="noopener"><code>sha256("satoshi nakamoto")</code></a>.</p>
   </section>
 
-  <section>
-    <h2>Someone took "timechain" too literally</h2>
+  <section aria-labelledby="s-timechain">
+    <h2 id="s-timechain">Someone took "timechain" too literally</h2>
     <p>26 funded addresses have private keys equal to Unix timestamps from 2009 to 2029.
       <a href="https://mempool.space/address/14xTHSRP6vbJv3xcXih2EnHYYCopR5ghJJ" target="_blank" rel="noopener">One</a>
       is a date in February 2009, weeks after Bitcoin launched.
       <a href="https://mempool.space/address/137ZSN8hYxMRqwSJErvyTnu3jsh5LLwMGa" target="_blank" rel="noopener">Another</a>,
       a March 2010 date, received 7.21 BTC.</p>
+    <p>Four keys are dates that have not happened yet:
+      <a href="https://mempool.space/address/1CZHMQ1JQxat7j6JCQ1yiarMrc1eoU3y9w" target="_blank" rel="noopener">September
+      2026</a>, <a href="https://mempool.space/address/16v3NVGXBos3rUrXvPc9b4W3ucRzgS96ue" target="_blank" rel="noopener">August
+      2027</a>, and two in
+      <a href="https://mempool.space/address/1DEWpQMzPjPsjszPXHHhVpYi65zX6xdUit" target="_blank" rel="noopener">20</a><a href="https://mempool.space/address/1AGsfSTyPEp4FYpJgQsUJ9rndVtpDpE8kg" target="_blank" rel="noopener">29</a>.
+      Two more are holidays: <a href="https://mempool.space/address/144b482SWaZEHabsciLnMi7JKYGus7WDFr" target="_blank" rel="noopener">New
+      Year's Day 2022</a> and <a href="https://mempool.space/address/13mGNhszax9hRcgbBw2nAjiqs6fykEFTiZ" target="_blank" rel="noopener">Christmas
+      Day 2023</a>.</p>
     <p>369 distinct keys are integers below 2<sup>24</sup>, including the 2015 puzzle keys. The
       smallest, <code>d = 1</code>, backs both
       <a href="https://mempool.space/address/1EHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm" target="_blank" rel="noopener"><code>1EHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm</code></a>
       and, not coincidentally, the BIP-173 specification's
       <a href="https://mempool.space/address/bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4" target="_blank" rel="noopener">example
       bech32 address</a>. It was still receiving dust the week of the snapshot; watcher bots sweep
-      every deposit within minutes.</p>
+      every deposit within minutes. For the full experience of countable keys,
+      <a href="https://keys.lol/" target="_blank" rel="noopener">keys.lol</a> enumerates every
+      possible private key as an infinite book.</p>
   </section>
 
-  <section>
-    <h2>Keys posted as public data</h2>
+  <section aria-labelledby="s-vanity">
+    <h2 id="s-vanity">Vanity nonces</h2>
+    <p>A signature's nonce is supposed to be random and secret. Some signers chose theirs by hand,
+      for fun, apparently not realizing that a known nonce hands over the private key in one
+      equation. Five signatures used <code>k = 1337</code>
+      (<a href="https://mempool.space/address/1M8qDbYTeo1AxRinLJP6vxFkU92tGSHoxy" target="_blank" rel="noopener">example</a>),
+      six used <code>k = 12345678</code>
+      (<a href="https://mempool.space/address/1HXSnvNGK8oYQCyLDkpHNZ2sWPvFsYQcFU" target="_blank" rel="noopener">example</a>),
+      sixteen used <code>k = 7</code>
+      (<a href="https://mempool.space/address/19jY65TFM1Rfhew7iWhLh5Eo3XQRHzyw7Q" target="_blank" rel="noopener">example</a>),
+      five used <code>k = 111</code>
+      (<a href="https://mempool.space/address/1D1jAubLTtS7PAosNkhnFa8UUY7eLCkPme" target="_blank" rel="noopener">example</a>),
+      and two connoisseurs went with <code>k = 133337</code> and <code>k = 1333337</code>. In all,
+      336 signatures used <code>|k| ≤ 2<sup>24</sup></code>.</p>
+  </section>
+
+  <section aria-labelledby="s-data">
+    <h2 id="s-data">Keys posted as public data</h2>
     <p>5,095 distinct private keys were found sitting in the chain as data: OP_RETURNs, test
       strings, puzzle material. <a href="https://mempool.space/tx/7342ee671991a000081ec7b248772e2ae0197252e90a862c4ba18c7f159501f0" target="_blank" rel="noopener">One
       transaction</a> embeds <code>sha256("")</code> as a key, and that key controls a funded
       address.</p>
   </section>
 
-  <section>
-    <h2>Stranger corners</h2>
+  <section aria-labelledby="s-corners">
+    <h2 id="s-corners">Stranger corners</h2>
     <ul>
-      <li>71,863 signatures carry a flag bug: signed with SIGHASH_SINGLE against a missing output,
+      <li>The oldest exposure in the audit:
+        <a href="https://mempool.space/address/1A8TY7dxURcsRtPBs7fP6bDVzAgpgP4962" target="_blank" rel="noopener"><code>1A8TY7dxURcsRtPBs7fP6bDVzAgpgP4962</code></a>
+        reused a nonce in block 121,481, May 2, 2011, twenty months before the attack's first
+        public write-up.</li>
+      <li>71,749 signatures carry a flag bug: signed with SIGHASH_SINGLE against a missing output,
         they commit to the constant <code>z = 1</code> instead of to any transaction, so anyone can
         copy one onto a different payment from the same key, no private key needed.
         <a href="https://mempool.space/address/15iwPhxErFDyQTJew81ok9hCbQNhyWuXq1" target="_blank" rel="noopener">One
         address</a> has 7 of them.</li>
       <li>287 signatures from at least 46 keys used <code>k = 1</code>
         (<a href="https://mempool.space/address/1KonZ9DA1eW4rW6eKzjhw2yTjjvXEDTKia" target="_blank" rel="noopener">example</a>);
-        336 used <code>|k| ≤ 2<sup>24</sup></code>; one used <code>k = d</code>, its own private key
-        as the nonce, in <a href="https://mempool.space/tx/ee3a72eaeb28bdc5b5dd550de526e167b5e9d35e4a42070bd9d5fde2bcb4fea3" target="_blank" rel="noopener">block
+        one used <code>k = d</code>, its own private key as the nonce, in
+        <a href="https://mempool.space/tx/ee3a72eaeb28bdc5b5dd550de526e167b5e9d35e4a42070bd9d5fde2bcb4fea3" target="_blank" rel="noopener">block
         450,655</a>.</li>
       <li>Every signature's r was matched against the x-coordinate of all 135.7 million on-chain
         public keys. <a href="https://mempool.space/tx/ae151af74211c679c13054bb5a96c7c8296797ae8c601b34fe226230988e2c1a" target="_blank" rel="noopener">One
@@ -147,19 +250,33 @@
     </ul>
   </section>
 
-  <section>
-    <h2>What held up</h2>
+  <section aria-labelledby="s-android">
+    <h2 id="s-android">The Android bug's footprint</h2>
+    <p>Nine of the 475 findings were first exposed in the four weeks around the most famous nonce
+      disaster of them all, the Android SecureRandom alert of 2013-08-11.
+      <a href="https://mempool.space/address/17HHdLh4oXncuTejALwC6fgArVqPUxh2Sr" target="_blank" rel="noopener">One
+      address</a> was exposed on August 6, five days before the alert;
+      <a href="https://mempool.space/address/1HgRa96fuHCde6Rie4nwhaz1hZR694X4wj" target="_blank" rel="noopener">another</a>
+      three weeks after it. The audit cannot prove which random number generator each signer used,
+      but the timing is that bug's era exactly.</p>
+  </section>
+
+  <section aria-labelledby="s-held">
+    <h2 id="s-held">What held up</h2>
     <p>Taproot and Schnorr are clean: no same-key nonce reuse, no key-path <code>k = d</code> across
       352 million outputs. Mainstream wallets, which derive nonces deterministically (RFC 6979), do
-      not appear anywhere in these findings.</p>
+      not appear anywhere in these findings. And the exotic attacks are simply not out there:
+      chain-wide scans found zero signatures with <code>k = s</code>, zero with <code>k = r</code>,
+      zero nonce-chaining relations, and zero nonces derived from block hashes or merkle roots
+      (5.7 million candidates, orphan blocks included).</p>
     <p>That is also why the July 2026 Coldcard entropy flaw is not in this audit: those keys leaked
       at generation time, before any signature existed, so they leave no signature-level trace.
       <a href="https://wizardsardine.com/blog/coldcard-vuln-deep-dive/" target="_blank" rel="noopener">Wizardsardine's
       incident report</a> reconstructs that flaw; related findings will be published separately.</p>
   </section>
 
-  <section>
-    <h2>So were the coins stolen?</h2>
+  <section aria-labelledby="s-stolen">
+    <h2 id="s-stolen">So were the coins stolen?</h2>
     <p>Unknown, and unknowable from chain data. 2,354.29 BTC moved out of affected addresses after
       their keys became publicly computable, and another 255.74 BTC moved inside the exposure blocks
       themselves. Some of that was certainly owners spending as usual, as the wallet that never
@@ -172,9 +289,9 @@
       need an uncompromised signature.</p>
   </section>
 
-  <section>
-    <h2>The hunters are always watching</h2>
-    <p>Every address in this audit is a set of published coordinates, and the hunters never log
+  <section aria-labelledby="s-hunters">
+    <h2 id="s-hunters">The hunters are always watching</h2>
+    <p>Every address in this audit is a set of published coordinates, and the machines never log
       off. Automated watchers monitor weak-key addresses around the clock: the moment a deposit
       confirms, a bot broadcasts a spend, and when several bots compete they outbid each other's
       fees until the miner takes most of it. Deposit to gone: typically minutes. That is why every
@@ -199,47 +316,83 @@
       @narcelio</a>).</p>
     <p>The BIP-173 example address, whose key is the integer 1, was still receiving dust the week
       of the snapshot; watcher bots sweep every deposit within minutes. There is no size floor
-      either: the smallest listed post-exposure spend in the audit is a single satoshi.</p>
+      either: the smallest listed post-exposure spend in the audit is
+      <a href="https://mempool.space/address/1817ZWpXpXek7WxvUQ1Seh3jEQ2KSKsRWw" target="_blank" rel="noopener">a
+      single satoshi</a>.</p>
   </section>
 
-  <section>
-    <h2>Why this keeps happening</h2>
-    <p>Every few years, broken randomness or broken conventions light another batch of lights:</p>
+  <section aria-labelledby="s-loop">
+    <h2 id="s-loop">Why this keeps happening</h2>
+    <p>None of this is new, and that is the point. The literature of exposed keys, with on-chain
+      evidence where it exists:</p>
     <ul>
-      <li>2013: Android's SecureRandom flaw produced colliding nonces
-        (<a href="https://bitcoin.org/en/alert/2013-08-11-android" target="_blank" rel="noopener">bitcoin.org alert</a>).</li>
-      <li>2015: the 1,000 BTC puzzle (<a href="https://bitcointalk.org/index.php?topic=1306983" target="_blank" rel="noopener">announcement</a>)
-        and Castellucci's <a href="https://rya.nc/files/cracking_cryptocurrency_brainwallets.pdf" target="_blank" rel="noopener">brainwallet-cracking
-        talk</a>.</li>
-      <li>2019: ISE's Ethercombing finds the "Blockchain Bandit"
-        (<a href="https://www.ise.io/casestudies/ethercombing/" target="_blank" rel="noopener">paper</a>).</li>
-      <li>2023: Milk Sad's broken <code>bx seed</code>
-        (<a href="https://milksad.info/" target="_blank" rel="noopener">CVE-2023-39910</a>) and
-        Randstorm's weak browser wallets
+      <li><strong>Dec 2010 · the original sin:</strong> Bitcoin is not the only system this bug has
+        burned. Months before the oldest exposure in this audit, fail0verflow walked on stage at
+        27C3 and showed that Sony had been signing PlayStation 3 software with a constant "random"
+        number, recovering its root key (<a href="https://media.ccc.de/v/27c3-4087-en-console_hacking_2010" target="_blank" rel="noopener">the
+        "Epic Fail" talk</a>). ECDSA fails the same way everywhere; Bitcoin just preserves every
+        failure in public, forever.</li>
+      <li><strong>Jan 2013 · the first write-up:</strong> Nils Schneider publishes the first public
+        recovery of a Bitcoin private key from reused nonces
+        (<a href="https://allprivatekeys.com/random-vulnerability" target="_blank" rel="noopener">archived
+        copy</a>). The vulnerable transaction he dissected is in this audit's table: its key signed
+        <strong>76 times with the same nonce</strong>
+        (<a href="https://mempool.space/address/1BFhrfTTZP3Nw4BNy4eX4KFLsn9ZeijcMm" target="_blank" rel="noopener"><code>1BFhrfTTZP3Nw4BNy4eX4KFLsn9ZeijcMm</code></a>;
+        <a href="https://mempool.space/tx/9ec4bc49e828d924af1d1029cacf709431abbde46d59554b62bc270e3b29c4b1" target="_blank" rel="noopener">his
+        example transaction</a>).</li>
+      <li><strong>Aug 2013 · Android SecureRandom:</strong> colliding nonces chain-wide, thefts
+        within days of the <a href="https://bitcoin.org/en/alert/2013-08-11-android" target="_blank" rel="noopener">bitcoin.org
+        alert</a>. Nine of this audit's findings date to its surrounding weeks.</li>
+      <li><strong>Dec 2014 · blockchain.info's RNG and the good hunter:</strong> a routine update
+        broke the wallet's random number generator for hours. A white hat going by johoe swept
+        hundreds of BTC from the predictable addresses before thieves could, and returned it
+        (<a href="https://bitcointalk.org/index.php?topic=581411.0" target="_blank" rel="noopener">his
+        thread</a>, <a href="https://www.coindesk.com/markets/2014/12/12/good-samaritan-blockchain-hacker-who-returned-267-btc-speaks-out" target="_blank" rel="noopener">CoinDesk</a>).
+        Not every hunter keeps what it catches.</li>
+      <li><strong>2015 · the puzzle and the brainwallet talk:</strong> the 1,000 BTC puzzle
+        (<a href="https://bitcointalk.org/index.php?topic=1306983" target="_blank" rel="noopener">announcement</a>,
+        <a href="https://mempool.space/tx/08389f34c98c606322740c0be6a7125d9860bb8d5cb182c02f98461e5fa6cd15" target="_blank" rel="noopener">funding
+        transaction</a>) and Castellucci's <a href="https://rya.nc/files/cracking_cryptocurrency_brainwallets.pdf" target="_blank" rel="noopener">DEF
+        CON talk</a>.</li>
+      <li><strong>2016 · the drainer census:</strong> <a href="https://jbonneau.com/doc/VBCKM16-FC-bitcoin_brain_wallets.pdf" target="_blank" rel="noopener"><em>The
+        Bitcoin Brain Drain</em></a> (FC '16) counts 884 live brainwallets and documents the
+        competing "drainer" bots that liquidate them on sight. This audit's dictionary finds 6,367
+        funded brainwallet addresses a decade later.</li>
+      <li><strong>2018 · the safe version of the trick:</strong> Bitcoin Core adopts low-r signature
+        grinding (<a href="https://github.com/bitcoin/bitcoin/pull/13666" target="_blank" rel="noopener">PR
+        13666</a>): the 2015 cluster's shorter encoding, achieved with a fresh nonce each try.</li>
+      <li><strong>2019 · lattices and guessable keys:</strong> Breitner and Heninger compute
+        hundreds of Bitcoin keys from biased nonces
+        (<a href="https://eprint.iacr.org/2019/023" target="_blank" rel="noopener">Biased Nonce Sense</a>),
+        the academic ancestor of this audit's HNP finding; ISE's Ethercombing finds the "Blockchain
+        Bandit" (<a href="https://www.ise.io/casestudies/ethercombing/" target="_blank" rel="noopener">paper</a>).</li>
+      <li><strong>2023 · broken RNGs, again:</strong> Milk Sad's <code>bx seed</code>
+        (<a href="https://milksad.info/" target="_blank" rel="noopener">CVE-2023-39910</a>;
+        <a href="https://milksad.info/lookup.html" target="_blank" rel="noopener">address lookup</a>)
+        and Randstorm's weak browser wallets
         (<a href="https://www.unciphered.com/disclosure-of-vulnerable-bitcoin-wallet-library-2/" target="_blank" rel="noopener">Unciphered</a>).</li>
-      <li>2024: Dark Skippy, seed exfiltration inside signatures
-        (<a href="https://darkskippy.com/" target="_blank" rel="noopener">disclosure</a>).</li>
-      <li>2026: the Coldcard entropy flaw
-        (<a href="https://wizardsardine.com/blog/coldcard-vuln-deep-dive/" target="_blank" rel="noopener">incident report</a>).</li>
+      <li><strong>2024 · malicious firmware:</strong> Dark Skippy, seed exfiltration inside
+        signatures (<a href="https://darkskippy.com/" target="_blank" rel="noopener">disclosure</a>);
+        never seen in the wild.</li>
+      <li><strong>2026 · the Coldcard entropy flaw:</strong> seeds leaked at generation time for
+        five years (<a href="https://wizardsardine.com/blog/coldcard-vuln-deep-dive/" target="_blank" rel="noopener">incident
+        report</a>); the coordinated sweep is itself on-chain: 517 drain transactions and 134.9 BTC
+        of dormant coins in <a href="https://mempool.space/block/00000000000000000000197fc747ebee54c64dd263e9e00c4e88902165085e57" target="_blank" rel="noopener">block
+        960,185</a> alone.</li>
     </ul>
   </section>
 
-  <section>
-    <h2>Method and disclosure</h2>
+  <section aria-labelledby="s-method">
+    <h2 id="s-method">Method and disclosure</h2>
     <p>The scan processed 760 GB of chain data in about 30 minutes. Every reported key was
       recovered in memory and verified against the on-chain public key; no private keys are stored
       in any artifact. Balances came from a local chain scan and transaction index, matched against
       the node's UTXO set with zero mismatches. The full address table, the CSV, and the precise
-      figure definitions are in <a href="./">the audit report</a>.</p>
+      figure definitions are below.</p>
     <p>If your address appears in the table, treat the key as public knowledge: never send funds to
-      it again. The forest does not forget a light.</p>
-  </section>
-  <section>
-    <h2>Afterword</h2>
-    <p>OpenSats, the nonprofit that funds Bitcoin open-source work, has opened a priority grants
-      track for the first responders and red teamers working the Coldcard incident:
-      <a href="https://opensats.org/blog/code-red-supporting-first-responders" target="_blank" rel="noopener">Code
-      RED: priority support for red teaming</a>.</p>
+      it again. The glass forest does not forget.</p>
+    <p><a href="https://opensats.org/blog/code-red-supporting-first-responders" target="_blank" rel="noopener">Donate
+      here to help fund more work like this</a> (OpenSats red-team grants).</p>
   </section>
 </main>
 
