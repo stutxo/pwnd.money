@@ -129,7 +129,8 @@
       measured every way that has ever happened on chain.</p>
     <ul>
       <li>475 nonce-reuse findings, each cryptographically proven, across 432 addresses.</li>
-      <li>3,207 private keys in total once transitive and cross-key leaks are counted.</li>
+      <li>3,207 private keys in total: 475 from plain nonce reuse, 1,011 more by transitive
+        propagation, and 1,721 net-new from the cross-key census.</li>
       <li>2,354.29 BTC moved out of affected addresses after their keys became publicly computable.</li>
       <li>0 BTC remained in any affected address at the snapshot. The watchers see to that: deposits
         to known-weak keys are swept within minutes.</li>
@@ -143,7 +144,9 @@
     <p>The largest spent-after-exposure case looks like an owner who never knew. On 2013-02-12, the
       wallet at <a href="https://mempool.space/address/1BMzWp77j7x3GKDYNbCP3df7YG3UEw1vVE" target="_blank" rel="noopener"><code>1BMzWp77j7x3GKDYNbCP3df7YG3UEw1vVE</code></a>
       signed two inputs of <a href="https://mempool.space/tx/6c2d0bbb87350cd18d93ede269817767b84715a6292a022c68b327f704ce486f" target="_blank" rel="noopener">one
-      transaction</a> with the same nonce. From that block on, anyone could compute its key.</p>
+      transaction</a> with the same nonce (later publicly dissected
+      <a href="https://bitcointalk.org/index.php?topic=919194.0" target="_blank" rel="noopener">on
+      bitcointalk</a>). From that block on, anyone could compute its key.</p>
     <p>Nobody took anything. The wallet simply kept operating: <a href="https://mempool.space/tx/f1021b6e62eccb35c88cb4e88ad34133d8121c065802d8eaf609664c621f6f03" target="_blank" rel="noopener">533.82
       BTC spent four days later</a>, about 1,930.26 BTC over the following weeks, 6,622.25 BTC across
       its lifetime. The activity before and after the leak is one continuous pattern, almost certainly
@@ -173,8 +176,11 @@
     <h2 id="s-nonce">One nonce, 2.55 million signatures</h2>
     <p>The most reused nonce in chain history is the constant <code>k = (n−1)/2</code>, whose
       signature fingerprint <code>r</code> starts <code>0000…3b78ce…</code>. In July 2015 it was a
-      dust-sweep trick: that k produces the shortest possible DER encoding, which saved fees. But
-      because k is a known constant, a single such signature is enough to expose the signer's key.</p>
+      dust-sweep trick: that k produces an exceptionally short DER encoding, which saved fees. But
+      because k is a known constant, a single such signature is enough to expose the signer's key.
+      The cluster was publicly documented at the time
+      (<a href="https://bitcointalk.org/index.php?topic=1118704.0" target="_blank" rel="noopener">the
+      most repeated r value on the blockchain</a>).</p>
     <p>A full census recovered and verified <strong>1,956 distinct private keys</strong> from
       2,552,742 signatures, including 1,034 keys that signed only once. Evidence: <a href="https://mempool.space/tx/05f331dfd6e16ecb28eb05f2b4cb0ffa25e82ec6489a5f37be3242a8e044faa9" target="_blank" rel="noopener">an
       early cluster transaction</a> and a <a href="https://mempool.space/tx/2646b0f5633b45c5e2acb0eec639dea8da92d5d17a16fa9479ef988bede06d4a" target="_blank" rel="noopener">November
@@ -288,9 +294,9 @@
       <li>Another burst went undocumented: 13 findings first exposed across 2022 and early 2023,
         11 of them packed into the same weeks of August and September, several keys in the same
         blocks, the signature of another wallet's broken random number generator.</li>
-      <li>71,749 signatures carry a flag bug: signed with SIGHASH_SINGLE against a missing output,
-        they commit to the constant <code>z = 1</code> instead of to any transaction, so anyone can
-        copy one onto a different payment from the same key, no private key needed.
+      <li>71,749 signatures carry a legacy flag bug: signed with SIGHASH_SINGLE against a missing
+        output, they commit to the constant <code>z = 1</code> instead of to any transaction, so
+        anyone can copy one onto a different payment from the same key, no private key needed.
         <a href="https://mempool.space/address/15iwPhxErFDyQTJew81ok9hCbQNhyWuXq1" target="_blank" rel="noopener">One
         address</a> has 7 of them.</li>
       <li>287 signatures from at least 46 keys used <code>k = 1</code>
@@ -301,9 +307,9 @@
       <li>Every signature's r was matched against the x-coordinate of all 135.7 million on-chain
         public keys. <a href="https://mempool.space/tx/ae151af74211c679c13054bb5a96c7c8296797ae8c601b34fe226230988e2c1a" target="_blank" rel="noopener">One
         2020 spend</a> signed with a nonce that was a 2015-compromised key's private scalar.</li>
-      <li>In a 2,000,000-key sample, 24 more keys fell without any plain reuse: 13 had signed twice
-        with one identical nonce, 7 had nonces differing by exactly 1, and 4 had nonces short enough
-        to fall to a lattice (HNP) attack.</li>
+      <li>In a 2,000,000-key sample, 24 more keys fell to per-key attacks the plain group matching
+        had missed: 13 had signed twice with one identical nonce, 7 had nonces differing by
+        exactly 1, and 4 had nonces short enough to fall to a lattice (HNP) attack.</li>
     </ul>
   </section>
 
@@ -321,11 +327,11 @@
   <section aria-labelledby="s-held">
     <h2 id="s-held">What held up</h2>
     <p>Taproot and Schnorr are clean: no same-key nonce reuse, no key-path <code>k = d</code> across
-      352 million outputs. Mainstream wallets, which derive nonces deterministically (RFC 6979), do
-      not appear anywhere in these findings. And the exotic attacks are simply not out there:
-      chain-wide scans found zero signatures with <code>k = s</code>, zero with <code>k = r</code>,
-      zero nonce-chaining relations, and zero nonces derived from block hashes or merkle roots
-      (5.7 million candidates, orphan blocks included).</p>
+      352 million outputs. Mainstream wallets, which derive nonces deterministically (RFC 6979 for
+      ECDSA, BIP340 for Schnorr), do not appear anywhere in these findings. And the exotic attacks
+      are simply not out there: chain-wide scans found zero signatures with <code>k = s</code>, zero
+      with <code>k = r</code>, zero nonce-chaining relations, and zero nonces derived from block
+      hashes or merkle roots (5.7 million candidates, orphan blocks included).</p>
     <p>That is also why the July 2026 Coldcard entropy flaw is not in this audit: those keys leaked
       at generation time, before any signature existed, so they leave no signature-level trace.
       <a href="https://wizardsardine.com/blog/coldcard-vuln-deep-dive/" target="_blank" rel="noopener">Wizardsardine's
