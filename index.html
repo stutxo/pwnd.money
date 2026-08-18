@@ -92,9 +92,10 @@
     <h1>The Glass Forest: Hunting for Broken Signatures in 3.76 Billion Signatures</h1>
     <p class="meta">by <a href="https://github.com/stutxo" target="_blank" rel="noopener">stutxo</a></p>
     <p class="lede">I scanned every signature ever confirmed on the Bitcoin blockchain, 3.76 billion
-      of them from 1.41 billion transactions, and recovered 3,207 private keys from on-chain data
-      alone. Each key was verified against its on-chain public key. No private keys are stored
-      anywhere, and every affected address was empty at the snapshot.</p>
+      of them from 1.41 billion transactions, and found 475 proven cases of nonce reuse that
+      leaked private keys. Expanding the search through transitive and cross-key analysis brought
+      the total to 3,207 recoverable keys, every one verified against its on-chain public key.
+      No private keys are stored anywhere, and every affected address was empty at the snapshot.</p>
     <p class="lede">The dark forest is dangerous because you cannot see what is hiding in it.
       Bitcoin is the opposite. Bitcoin is a glass forest. Every transaction is visible. Every
       signature is exposed to inspection. Every mistake is preserved indefinitely. The forest is
@@ -127,12 +128,15 @@
     <p>A Bitcoin signature needs a one-time secret number, the nonce. Reuse it, pick it from a
       small space, or let anyone guess it, and the private key falls out of the math: two
       signatures with the same nonce, or one signature with a known one, is enough. This audit
-      measured every way that has ever happened on chain.</p>
+      measured every way that has ever happened on chain. Two families of failure appear below:
+      signatures that leaked their keys through broken nonces, and keys that were weak from
+      birth, guessed, counted to, or posted in public.</p>
     <ul>
       <li>475 nonce-reuse findings, each cryptographically proven, across 432 addresses.</li>
       <li>3,207 private keys in total: 475 from plain nonce reuse, 1,011 more by transitive
         propagation, and 1,721 net-new from the cross-key census.</li>
-      <li>2,354.29 BTC moved out of affected addresses after their keys became publicly computable.</li>
+      <li>2,354.29 BTC moved out of affected addresses after their keys became publicly computable;
+        82% of it came from one 2013 wallet whose owner kept spending as usual.</li>
       <li>0 BTC remained in any affected address at the snapshot. The watchers see to that: deposits
         to known-weak keys are swept within minutes.</li>
       <li>About 85% of the 475 keys leaked between 2012 and 2015, but the tail never stops: the
@@ -356,7 +360,7 @@
   <section aria-labelledby="s-hunters">
     <h2 id="s-hunters">The hunters are always watching</h2>
     <p>Every address in this audit is a set of published coordinates, and the machines never log
-      off. Automated watchers monitor weak-key addresses around the clock: the moment a deposit
+      off. Automated sweepers monitor weak-key addresses around the clock: the moment a deposit
       confirms, a bot broadcasts a spend, and when several bots compete they outbid each other's
       fees until the miner takes most of it. Deposit to gone: typically minutes. That is why every
       affected address reads zero, and why sending "just a little, to test" to one donates it to
@@ -456,9 +460,9 @@
 
   <section aria-labelledby="s-method">
     <h2 id="s-method">Method and disclosure</h2>
-    <p>The scan processed 760 GB of chain data in about 30 minutes. Every reported key was
-      recovered in memory and verified against the on-chain public key; no private keys are stored
-      in any artifact. Balances came from a local chain scan and transaction index, matched against
+    <p>The scan processed 760 GB of chain data in about 30 minutes on a local Bitcoin Core full
+      node (block files plus transaction index). Every reported key was recovered in memory and
+      verified against the on-chain public key; no private keys are stored in any artifact. Balances came from a local chain scan and transaction index, matched against
       the node's UTXO set with zero mismatches. The full address table, the CSV, and the precise
       figure definitions are below.</p>
     <p>If your address appears in the table, treat the key as public knowledge: never send funds to
