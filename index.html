@@ -105,6 +105,7 @@
       <div><dt>Affected addresses</dt><dd>432</dd></div>
       <div><dt>Spent after exposure</dt><dd>2,354.29 BTC</dd></div>
       <div><dt>Snapshot balance</dt><dd>0 BTC</dd></div>
+      <div><dt>Up for grabs right now</dt><dd>15,285 sats</dd></div>
       <div><dt>Proven keys incl. cross-key census</dt><dd>3,207</dd></div>
     </dl>
     <p class="status"><strong>No affected address held funds at the snapshot.</strong></p>
@@ -245,8 +246,8 @@
   <section aria-labelledby="s-messages">
     <h2 id="s-messages">The chain as a message board</h2>
     <p>Some outputs need no key at all: a locking script that is just a data push evaluates as
-      true, so anyone can spend them. Their scripts are mostly text messages, and they hold a
-      little over 15,000 sats, verified unspent at block 963,084. The dust-value ones presumably persist
+      true, so anyone can spend them. Their scripts are mostly text messages, and they hold
+      15,285 sats, verified unspent at block 963,084. The dust-value ones presumably persist
       because sweeping them costs more in fees than they pay; the larger ones are simply up for
       grabs.</p>
     <ul>
@@ -269,8 +270,8 @@
         July 2026 transaction</a> with 88 outputs ends in a 4,096-sat output whose entire locking
         script is the text "Money money money". Its OP_RETURN reads "You owe me money".</li>
       <li>"A pagar las deudas!" and one more bare-push output (21 sats each), plus 11,173 bare
-        OP_TRUE outputs holding one satoshi each (every bigger one was already swept long ago).
-        All of it spendable by anyone.</li>
+        OP_TRUE outputs: 11,000 holding one satoshi each and 173 empty (every bigger one was
+        already swept long ago). All of it spendable by anyone.</li>
     </ul>
   </section>
 
