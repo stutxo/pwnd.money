@@ -1,6 +1,6 @@
 # The Glass Forest — fact inventory
 
-Every interesting finding, with numbers and evidence links. No framing; pick what you want.
+Every interesting finding, with numbers and evidence links.
 
 ## Headline stats
 
